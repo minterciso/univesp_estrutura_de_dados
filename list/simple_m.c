@@ -139,6 +139,32 @@ int addNode(SList *l, SRegistry reg){
 }
 
 /**
+ * @brief Add an ordered node
+ * @param l An already initiated linked list
+ * @param reg The registry to add
+ * @return 0 if there's any error, 1 otherwise
+ */
+int addOrderedNode(SList *l, SRegistry reg){
+	int id = reg.id;
+	SList *prev_node = NULL, *node = NULL;
+
+	node = searchWithPrev(l, id, &prev_node);
+	if(node != NULL) return 0;
+
+	node = createNode(&reg);
+	if(prev_node == NULL){
+		node->next = l;
+		l=node;
+	}
+	else{
+		node->next=prev_node->next;
+		prev_node->next=node;
+	}
+
+	return 1;
+}
+
+/**
  * @brief Clear the memory used for the linked list.
  * @param l An already initiaded linked list
  */
@@ -168,16 +194,12 @@ int main(int argc, char *argv[])
 
 	fprintf(stdout,"Inserting %d random elements on the list...\n", list_length);
 	while(curr_length != list_length){
-		tmp_registry.id=id++;
+		tmp_registry.id=rand();
 		tmp_registry.grade=(float)rand()/(float)(RAND_MAX)*10;
 		if(l==NULL)
 			l=createNode(&tmp_registry);
-		else{
-			if(addNode(l,tmp_registry) <= 0){
-				fprintf(stderr,"Error adding to list\n");
-				return EXIT_FAILURE;
-			}
-		}
+		else
+			addOrderedNode(l,tmp_registry);
 		curr_length = length(l);
 	}
 	print(l);
