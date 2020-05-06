@@ -102,6 +102,23 @@ SList* search(SList *l, int id){
 }
 
 /**
+ * @brief Search for the id on the list, and store the previous (if any) on the pointer to prev
+ * @param l An already allocated linked list
+ * @param id The id to search for
+ * @param prev A pointer to a Node to store the previous, if any
+ * @return The node found, if any
+ */
+SList* searchWithPrev(SList *l, int id, SList **prev){
+	SList *node = l;
+	while(node && node->reg.id < id){
+		*prev = node;
+		node=node->next;
+	}
+	if(node && node->reg.id == id) return node;
+	return NULL;
+}
+
+/**
  * @brief Add an UNORDERED registry on the linked list
  * @param l An already allocated linked list
  * @param reg The registry to add to the linke list
@@ -164,8 +181,7 @@ int main(int argc, char *argv[])
 		curr_length = length(l);
 	}
 	print(l);
-	SList * node_search = NULL;
-	node_search = search(l, 5);
+	clearList(l);
 
 	return EXIT_SUCCESS;
 }
