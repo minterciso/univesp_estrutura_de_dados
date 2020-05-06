@@ -89,6 +89,19 @@ void print(SList *l)
 }
 
 /**
+ * @brief Search on an unordered list and return the Node found, if any
+ * @param l An already allocated linked list
+ * @param id The id to search for
+ * @return A pointer to the node found, or NULL if not found
+ */
+SList* search(SList *l, int id){
+	SList *node = l;
+	while(node && node->reg.id < id) node=node->next;
+	if(node && node->reg.id == id) return node;
+	return NULL;
+}
+
+/**
  * @brief Add an UNORDERED registry on the linked list
  * @param l An already allocated linked list
  * @param reg The registry to add to the linke list
@@ -151,71 +164,9 @@ int main(int argc, char *argv[])
 		curr_length = length(l);
 	}
 	print(l);
-	clearList(l);
+	SList * node_search = NULL;
+	node_search = search(l, 5);
 
 	return EXIT_SUCCESS;
 }
 
-/*
-typedef struct s_list{
-	int elem;
-	struct s_list *next;
-}SList;
-
-SList* create_node(int elem){
-	ssize_t list_size = sizeof(SList);
-	SList *p = NULL;
-
-	if((p=(SList*)malloc(list_size))==NULL){
-		perror("malloc");
-		return NULL;
-	}
-	memset(p, '\0', list_size);
-	p->elem = elem;
-	return p;
-}
-
-void print(SList *list){
-	SList *p = list;
-	fprintf(stdout,"List:");
-	while(p){
-		fprintf(stdout," %d", p->elem);
-		p=p->next;
-	}
-	fprintf(stdout,"\n");
-}
-
-SList* add(SList *list, int elem){
-	SList *node = create_node(elem);
-	SList *p = NULL;
-
-	if(node == NULL){
-		fprintf(stderr,"Unable to add node to list.\n");
-		return NULL;
-	}
-	if(list == NULL)
-		return node;
-	p=list;
-	while(p->next)
-		p=p->next;
-	p->next = node;
-	return list;
-}
-
-void clear(SList *list){
-	SList *p = list;
-	SList *rem = NULL;
-	
-	while(p->next){
-		rem=p;
-		p=p->next;
-		free(rem);
-	}
-	if(p)
-		free(p);
-}
-
-int main(void){
-	return EXIT_SUCCESS;
-}
-*/
