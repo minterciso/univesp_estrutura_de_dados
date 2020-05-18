@@ -287,7 +287,7 @@ char *strncpy(char *dest, const char *src, size_t n);
 
 Bom, ela precisa de dois ponteiros do tipo char e um valor com a quantidade de bytes (size\_t é um tipo de int) para copiar, porém quando passamos, passamos: `tmp.nome` como destino, e `reg2->nome` como origem, não deveria ser `&tmp.nome` e `&reg2->nome`?
 
-Se você se lembrar, a nossa definição da estrutura diz que `nome` é `char nome[80];`, isso em C é um __ponteiro__ do tipo __char__ que possui 80 __char__s alocados de maneira fixa (não dinâmica usando `malloc`), logo `tmp.nome` representa o __ponteiro__ para o __início__ da _string_ nome dentro da estrutura `tmp`, já `reg2->nome` é a mesma coisa, porém para `reg2` que é um __ponteiro__ para um estrutura do tipo SExemplo, chamada de `reg2`.
+Se você se lembrar, a nossa definição da estrutura diz que `nome` é `char nome[80];`, isso em C é um __ponteiro__ do tipo __char__ que possui 80 __chars__ alocados de maneira fixa (não dinâmica usando `malloc`), logo `tmp.nome` representa o __ponteiro__ para o __início__ da _string_ nome dentro da estrutura `tmp`, já `reg2->nome` é a mesma coisa, porém para `reg2` que é um __ponteiro__ para um estrutura do tipo SExemplo, chamada de `reg2`.
 
 Pode parecer confuso, mas pense dessa forma:
 
@@ -314,4 +314,4 @@ Isso permite a seguinte linha:
 l->next->next->next->next->id;
 ```
 
-Que basicamente diz que queremos acessar o campo `id` do 4o nó depois do nó apontado por `l`, caso ele exista obviamente. Mas isso é sobre lista ligada, e já não faz parte dessa explicação.
+Que basicamente diz que queremos acessar o campo `id` do quarto nó depois do nó apontado por `l`, caso ele exista obviamente. Mas isso é sobre lista ligada, e já não faz parte dessa explicação.
