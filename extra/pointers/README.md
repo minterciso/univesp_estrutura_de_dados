@@ -166,3 +166,85 @@ E a execução do mesmo:
     Main: a=20 b=10
 
 Que é __exatamente__ o que queremos.
+
+# Estruturas
+Lembra no começo que eu falei que existiam duas sintaxes? Pois bem, existe uma terceira exclusiva para estruturas:
+
+* Operador seta: ->
+
+Para entender esse operador, precisamos antes de mais nada entender (por cima) como funciona uma estrutura em C. Em C uma estrutura é definida pelo tipo `struct` e cria uma *"estrutura"* que pode ter 1 ou mais ítens diferentes.
+Por exemplo:
+```C
+struct SExemplo{
+	int id;
+	char nome[80];
+};
+```
+
+Para utilizarmos, podemos utilizar a seguinte `main()`:
+
+```C
+int main(void){
+	struct SExemplo reg1;
+	reg1.id=0;
+	strncpy(reg1.nome,"Asdrubal", 80);
+
+	printf("ID:%d\tNome:%s\n",reg1.id, reg1.nome);
+	return EXIT_SUCCESS;
+}
+```
+
+Pois bem, uma vez compilado, qual é a saída do programa?
+
+> ID:0	Nome:Asdrubal
+
+Como esperado, agora, o que acontece por trás? Vamos ver no debugger como ficam os endereços de memória, criando um breakpoint depois de popular a estrutura:
+
+    18		printf("ID:%d\tNome:%s\n",reg1.id, reg1.nome);
+    (gdb) p reg1
+    $3 = {id = 0, nome = "Asdrubal", '\000' <repeats 71 times>}
+    (gdb) p &reg1
+    $4 = (struct SExemplo *) 0x7fffffffda00
+    (gdb) p &reg1.id
+    $5 = (int *) 0x7fffffffda00
+    (gdb) p &reg1.nome
+     $6 = (char (*)[80]) 0x7fffffffda04
+
+Ou seja, o que podemos levar dessa história toda é que uma estrutura "junta" várias variáveis em um único ponto de entrada, em questão de endereço de memória. Dessa forma, quando fazemos uma alocação dinâmica, precisamos de uma nova sintaxe para avisar ao compilador que estamos falando de uma estrutura e não de uma variável única, por isso o operador ->.
+
+Para simplificar, normalmente fazemos a seguinte linha extra:
+```C
+typedef struct SExemplo REGISTRO;
+```
+
+Ou juntamos tudo em:
+```C
+typedef struct SExemplo{
+	int id;
+	char nome[80];
+} REGISTRO;
+```
+
+Dessa forma criamos o "tipo" novo chamado `REGISTRO`, que é uma simplificação do código `struct SExemplo`.
+
+O mesmo código apresetando antes, agora com essa simplificação fica:
+```C
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct SExemplo{
+	int id;
+	char nome[80];
+} REGISTRO;
+
+
+int main(void){
+	REGISTRO reg1;
+	reg1.id=0;
+	strncpy(reg1.nome,"Asdrubal", 80);
+
+	printf("ID:%d\tNome:%s\n",reg1.id, reg1.nome);
+	return EXIT_SUCCESS;
+}
+```
