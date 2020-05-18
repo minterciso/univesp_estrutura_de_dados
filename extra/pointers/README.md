@@ -248,3 +248,70 @@ int main(void){
 	return EXIT_SUCCESS;
 }
 ```
+
+## Ponteiros e Swap
+Como estamos trabalhando com estruturas, vamos fazer dois métodos de `swap()`:
+
+* `swap_full`: Faz swap do registro completo
+* `swap_nome`: Faz swap apenas do nome
+
+Para isso vamos precisar de duas funções de C, que estão no `string.h`, strncpy() e memcpy(). As duas copia os valores de endereço de memória de um ponteiro para outro, mas a primeira para quando encontra um '\0' e é mais otimizada para strings, a segunde é genérica.
+
+Vamos ao código dos métodos:
+```C
+void swap_full(REGISTRO *reg1, REGISTRO *reg2){
+	REGISTRO tmp;
+	size_t reg_size = sizeof(REGISTRO);
+	memcpy(&tmp, reg1, reg_size);
+	memcpy(reg1, reg2, reg_size);
+	memcpy(reg2, &tmp, reg_size);
+}
+
+void swap_nome(REGISTRO *reg1, REGISTRO *reg2){
+	REGISTRO tmp;
+	strncpy(tmp.nome, reg2->nome, 80);
+	strncpy(reg2->nome, reg1->nome, 80);
+	strncpy(reg1->nome, tmp.nome, 80);
+}
+```
+
+Um detalhe, vejam que existe a linha `size_t reg_size = sizeof(REGISTRO);`, isso é a mesma coisa que `size_t reg_size = sizeof(struct SExemplo)`, e basicamente cria uma variável chamada `reg_size` que possui o tamanho em bytes da estrutura SExemplo.
+
+A função `swap_full` não tem nada de novo, ela apenas __copia__ reg\_size bytes do que está no endereço de memória __apontado__ por reg1 para tmp, depois reg\_size bytes do que aponta no reg2 para reg1, e depois reg\_size bytes de tmp para reg2. Mas onde entra o famoso '->'? Na função `swap_nome`.
+
+Diferente da `swap_full`, a `swap_nome` queremos mudar __apenas__ o nome, mas manter o id da estrutura, logo precisamos conseguir encontrar o campo nome dentro do que é apontado por reg1 e reg2. É exatamente para isso que existe o operador '->', quando o compilador pega isso, ele entende que estamos buscando a variável dentro de um ponteiro de uma estrutura. Veja como exemplo o primeiro `strncpy(tmp.nome, reg2->nome, 80);`. Vamos destrinchar um pouco mais o que acontece aqui, veja que a assinatura da função strncpy() é:
+
+```C
+char *strncpy(char *dest, const char *src, size_t n);
+```
+
+Bom, ela precisa de dois ponteiros do tipo char e um valor com a quantidade de bytes (size\_t é um tipo de int) para copiar, porém quando passamos, passamos: `tmp.nome` como destino, e `reg2->nome` como origem, não deveria ser `&tmp.nome` e `&reg2->nome`?
+
+Se você se lembrar, a nossa definição da estrutura diz que `nome` é `char nome[80];`, isso em C é um __ponteiro__ do tipo __char__ que possui 80 __char__s alocados de maneira fixa (não dinâmica usando `malloc`), logo `tmp.nome` representa o __ponteiro__ para o __início__ da _string_ nome dentro da estrutura `tmp`, já `reg2->nome` é a mesma coisa, porém para `reg2` que é um __ponteiro__ para um estrutura do tipo SExemplo, chamada de `reg2`.
+
+Pode parecer confuso, mas pense dessa forma:
+
+* estou chamando a estrutura e não o ponteiro da estrutura? Uso '.' para acessar os campos.
+* estou chamando o ponteiro do endereço de memória da estrutura? Uso '->' para acessar os campos.
+
+Uma vez que cheguei no campo, tudo funciona normalmente.
+
+Para quem tem curiosidade uma lista ligada pode ter esse tipo de estrutura:
+
+```C
+typedef struct node{
+	int id;
+	float grade;
+	struct node *next;
+} SNode;
+```
+
+Ou seja, estamos adicionando um campo, dentro da nossa estrutura chamada `node`, que aponta para uma outra estrutura, que eu ainda não sei onde está, chamada `next`, que por sua vez possui outro `next`, e outro, e outro...
+
+Isso permite a seguinte linha:
+
+```C
+l->next->next->next->next->id;
+```
+
+Que basicamente diz que queremos acessar o campo `id` do 4o nó depois do nó apontado por `l`, caso ele exista obviamente. Mas isso é sobre lista ligada, e já não faz parte dessa explicação.
