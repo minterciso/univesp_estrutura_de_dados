@@ -315,3 +315,47 @@ l->next->next->next->next->id;
 ```
 
 Que basicamente diz que queremos acessar o campo `id` do quarto nó depois do nó apontado por `l`, caso ele exista obviamente. Mas isso é sobre lista ligada, e já não faz parte dessa explicação.
+
+# Alocação dinâmica
+Em C, podemos criar variáveis de duas formas diferentes:
+
+1. De forma estática
+2. De forma dinâmica
+
+A forma estática é simples, porém não permite liberdade, uma vez que você definiu o espaço de memória, ele não muda durante o resto do programa. Por exemplo, o código abaixo aloca 10 unidades do tipo `REGISTRO`, e não permite modificar esse array:
+
+```C
+	REGISTRO regs[10];
+```
+
+Isso em tempo de compilação. Existem formas de transformar isso de maneira dinâmica, porém a memória **sempre** será alocada no espaço de memória do programa, e isso **pode** causar problemas futuros, por exemplo:
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+void sample(int n){
+	int arr[n];
+	for(int i=0;i<n;i++)
+		arr[i]=i;
+	for(int i=0;i<n;i++)
+		printf("%d ", arr[i]);
+}
+
+int main(void){
+	sample(10);
+	return EXIT_SUCCESS;
+}
+```
+
+O código acima funciona normalmente, porém o uso dele não é recomendado, uma vez que você pode perder o controle do tamanho do array, e existem estruturas melhores para se fazer isso (como por exemplo uma lista duplamente ligada).
+
+Então como fazemos a mesma coisa, porém de forma *"correta"*?
+
+Para isso temos as funções:
+
+* `void *malloc(size_t size);`
+* `void free(void *ptr);`
+
+**OBS: Existem outras funções como realloc() e calloc(), mas não vamos falar delas aqui** 
+
